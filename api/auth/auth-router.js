@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = require('express').Router();
-const User = require('../users/users-model.js');
-const { BCRYPT_ROUNDS, JWT_SECRET } = require('../../config');
+const Users = require('../users/users-model.js');
+const { JWT_SECRET } = require('../../config');
 
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
@@ -12,21 +12,17 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    const existingUser = await User.findBy({ username });
+    const existingUser = await Users.findBy({ username });
 
     if (existingUser) {
       return res.status(400).json({ message: 'username taken' });
     }
 
-    const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS);
-    const newUser = { username, password: hash };
-
-    const savedUser = await User.add(newUser);
+    const newUser = await Users.createUserWithHashedPassword(username, password);
 
     res.status(201).json({
-      id: savedUser.id,
-      username: savedUser.username,
-      
+      id: newUser.id,
+      username: newUser.username,
     });
   } catch (error) {
     console.error(error);
@@ -42,14 +38,18 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const [user] = await User.findBy({ username });
+    const [user] = await Users.findBy({ username });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(401).json({ message: 'invalid credentials' });
     }
 
     const token = generateToken(user);
-    res.status(200).json({ message: `welcome, ${user.username}`, token });
+
+    res.status(200).json({
+      message: `welcome, ${user.username}`,
+      token,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error during login', error: error.message });
