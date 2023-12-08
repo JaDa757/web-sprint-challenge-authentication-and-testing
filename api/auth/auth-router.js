@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       id: newUser.id,
       username: newUser.username,
-      password: newUser.password,
+      // password: newUser.password,
     });
   } catch (error) {
     console.error(error);
