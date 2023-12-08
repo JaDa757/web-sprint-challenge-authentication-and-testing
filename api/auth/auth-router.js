@@ -38,25 +38,25 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    res.status(400).json({ message: 'username and password required' });
+    return res.status(400).json({ message: 'username and password required' });
   }
 
   try {
     const [user] = await Users.findBy({ username });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
-      res.status(401).json({ message: 'invalid credentials' });
+      return res.status(401).json({ message: 'invalid credentials' });
     }
 
     const token = generateToken(user);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: `welcome, ${user.username}`,
       token,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error during login', error: error.message });
+    return res.status(500).json({ message: 'Error during login', error: error.message });
   }
 });
 
