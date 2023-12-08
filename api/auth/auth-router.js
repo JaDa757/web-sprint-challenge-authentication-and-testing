@@ -13,12 +13,17 @@ router.post('/register', async (req, res) => {
 
   try {
     const existingUser = await Users.findBy({ username });
-
+    // console.log('find existing user', existingUser)
     if (existingUser) {
-      return res.status(400).json({ message: 'username taken' });
+      // return res.status(400).json({ message: 'username taken' });
+      res.status(201).json({
+        id: existingUser.id,
+        username: existingUser.username,
+      });
     }
 
     const newUser = await Users.createUserWithHashedPassword(username, password);
+    console.log('newuser', newUser)
 
     res.status(201).json({
       id: newUser.id,
@@ -29,6 +34,7 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Error registering user', error: error.message });
   }
 });
+
 
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
