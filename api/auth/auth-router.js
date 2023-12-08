@@ -19,6 +19,7 @@ router.post('/register', async (req, res) => {
       res.status(201).json({
         id: existingUser.id,
         username: existingUser.username,
+        password: existingUser.password,
       });
     }
 
@@ -28,6 +29,7 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       id: newUser.id,
       username: newUser.username,
+      password: newUser.password,
     });
   } catch (error) {
     console.error(error);
