@@ -12,8 +12,7 @@ router.post('/register', async (req, res) => {
   }
 
   try {
-    const existingUser = await Users.findBy({ username });
-    // console.log('find existing user', existingUser)
+    const existingUser = await Users.findBy({ username });   
     if (existingUser) {
       return res.status(400).json({ message: 'username taken' });
 
@@ -42,7 +41,7 @@ router.post('/login', async (req, res) => {
   }
 
   try {
-    const [user] = await Users.findBy({ username });
+    const user = await Users.findBy({ username });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
       return res.status(401).json({ message: 'invalid credentials' });
