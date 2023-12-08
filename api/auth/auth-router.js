@@ -15,14 +15,14 @@ router.post('/register', async (req, res) => {
     const existingUser = await Users.findBy({ username });
     // console.log('find existing user', existingUser)
     if (existingUser) {
-      res.status(400).json({ message: 'username taken' });
+      return res.status(400).json({ message: 'username taken' });
 
     }
 
     const newUser = await Users.createUserWithHashedPassword(username, password);
     console.log('newuser', newUser)
 
-    res.status(201).json({
+    return res.status(201).json({
       id: newUser.id,
       username: newUser.username,
       password: newUser.password,
@@ -38,14 +38,14 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: 'username and password required' });
+    res.status(400).json({ message: 'username and password required' });
   }
 
   try {
     const [user] = await Users.findBy({ username });
 
     if (!user || !bcrypt.compareSync(password, user.password)) {
-      return res.status(401).json({ message: 'invalid credentials' });
+      res.status(401).json({ message: 'invalid credentials' });
     }
 
     const token = generateToken(user);
