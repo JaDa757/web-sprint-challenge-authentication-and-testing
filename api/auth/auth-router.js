@@ -15,12 +15,8 @@ router.post('/register', async (req, res) => {
     const existingUser = await Users.findBy({ username });
     // console.log('find existing user', existingUser)
     if (existingUser) {
-      // return res.status(400).json({ message: 'username taken' });
-      res.status(201).json({
-        id: existingUser.id,
-        username: existingUser.username,
-        password: existingUser.password,
-      });
+      res.status(400).json({ message: 'username taken' });
+
     }
 
     const newUser = await Users.createUserWithHashedPassword(username, password);
@@ -29,7 +25,7 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       id: newUser.id,
       username: newUser.username,
-      // password: newUser.password,
+      password: newUser.password,
     });
   } catch (error) {
     console.error(error);
